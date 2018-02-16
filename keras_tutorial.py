@@ -71,8 +71,25 @@ model = Sequential()
 model.add(Convolution2D(32, (3, 3), activation='relu', input_shape=(1,28,28), data_format='channels_first'))
 # Declare input layer
 # 32 -> number of convolution filters to use
-# 3 -> number of rows in each convolution kernel
-# 3 -> number of columns in each convolution kernel
+# (3, 3) -> number of rows & columns in each convolution kernel
 
-print model.output_shape
+# print model.output_shape
+# (None, 32, 26, 26)
 
+model.add(Convolution2D(32, (3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2))) # Reduce the number of parameters by sliding a 2x2 pooling filter and taking max of the 4 values
+model.add(Dropout(0.25)) # Regularizes model to prevent overfitting (overfitting is like memorizing the answers, instead of learning the way)
+
+model.add(Flatten())
+model.add(Dense(128, activation='relu')) # First parameter of Dense layers is output size
+model.add(Dropout(0.5))
+model.add(Dense(10, activation='softmax')) # First parameter of Dense layers is output size
+
+model.compile(loss='categorical_crossentropy',
+			optimizer='adam',
+			metrics=['accuracy'])
+
+model.fit(X_train, Y_train,
+		batch_size=32, nb_epoch=10, verbose=1)
+
+score = model.evaluate(X_test, Y_test, verbose=0)
